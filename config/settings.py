@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_apscheduler',
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
     'accounts',
     'maps',
