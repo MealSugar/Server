@@ -34,4 +34,8 @@
 
 #### 4. github 사이트 와서 pull & request 생성하기 (dev <- feat/이슈번호)
 
+#### 5. 본인 로컬 dev 브랜치에 git pull origin dev로 최신화 하기
+
+#### 6. 완료된 이슈 브랜치 삭제하기 (git branch -d feat/이슈번호 -> git push origin --delete feat/이슈번호)
+
 #### 5. 팀장 코드 피드백 완료 후 본인이 merge 하기
