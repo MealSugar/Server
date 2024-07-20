@@ -1,13 +1,36 @@
 from django.db import models
 from accounts.models import User
 
+
+class DietSet(models.Model):
+    diet_set_id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='dietsets')
+
+
+class Diet(models.Model):
+    diet_id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='diets')
+    diet_set = models.ForeignKey(DietSet, on_delete=models.CASCADE, related_name='diets')
+    diet_name = models.CharField(max_length=100, blank=True, null=True)
+    diet_calorie = models.IntegerField(blank=True, null=True)
+    created_at = models.DateField(auto_now_add=True, blank=True, null=True)
+    diet_img = models.ImageField(upload_to='diet_photo/%Y%m%d', blank=True, null=True)
+    meal_time = models.CharField(max_length=100, blank=True, null=True)
+    meal_type = models.CharField(max_length=100, blank=True, null=True)
+    is_my_recipe = models.BooleanField(default=False)
+    is_like = models.BooleanField(default=False)
+    heart_count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.diet_name
+
 class Food(models.Model):
     food_id = models.BigAutoField(primary_key=True)
-    diet = models.ForeignKey(Diet, on_delete=models.CASCADE, related_name=foods)
+    diet = models.ForeignKey(Diet, on_delete=models.CASCADE, related_name='foods')
     food_name = models.CharField(max_length=100)
     food_type = models.CharField(max_length=100)
     food_calorie = models.IntegerField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateField(auto_now_add=True)
     recipe = models.TextField()
     grain = models.IntegerField(default=0)
     fish_meat_low_fat = models.IntegerField(default=0)
@@ -20,22 +43,6 @@ class Food(models.Model):
     def __str__(self):
         return self.food_name
 
-class Diet(models.Model):
-    diet_id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name=diets)
-    diet_set = models.ForeignKey(DietSet, on_delete=models.CASCADE)
-    diet_name = models.CharField(max_length=100)
-    diet_calorie = models.IntegerField(blank=True, null=True)
-    created_at = models.DateField(auto_now_add=True, blank=True, null=True)
-    diet_img = models.ImageField(upload_to='diet_photos/', blank=True, null=True)
-    meal_time = models.CharField(max_length=100, blank=True, null=True)
-    meal_type = models.CharField(max_length=100, blank=True, null=True)
-    is_my_recipe = models.BooleanField(default=False)
-    is_like = models.BooleanField(default=False)
-    heart_count = models.IntegerField(default=0)
-
-    def __str__(self):
-        return self.diet_name
 
 class FoodExchangeListCalorie(models.Model):
     food_exchange_list_calorie_id = models.BigAutoField(primary_key=True)
@@ -60,7 +67,3 @@ class FoodExchangeListProduct(models.Model):
     fat_product = models.TextField()
     dairy_product = models.TextField()
     vegetable_product = models.TextField()
-
-class DietSet(models.Model):
-    diet_set_id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name=dietsets)
