@@ -39,3 +39,5 @@
 #### 6. merge 후 본인 로컬 dev 브랜치에 git pull origin dev로 최신화 하기
 
 #### 7. 완료된 이슈 브랜치 삭제하기 (git branch -d feat/이슈번호 -> git push origin --delete feat/이슈번호)
+
+#### 8. 화이팅~!
