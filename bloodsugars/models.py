@@ -3,7 +3,7 @@ from accounts.models import User
 
 class BloodSugarState(models.Model):
     blood_sugar_id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='BloodSugarStates')
     morning_fasting_blood_sugar = models.IntegerField(verbose_name="아침 공복 혈당", null=True, blank=True)
     noon_fasting_blood_sugar = models.IntegerField(verbose_name="점심 공복 혈당", null=True, blank=True)
     evening_fasting_blood_sugar = models.IntegerField(verbose_name="저녁 공복 혈당", null=True, blank=True)
@@ -15,6 +15,6 @@ class BloodSugarState(models.Model):
 
 class TargetBloodSugar(models.Model):
     target_blood_sugar_id = models.BigAutoField(primary_key=True)
-    height = models.FloatField(verbose_name="키", default=0)
-    weight = models.FloatField(verbose_name="몸무게", default=0)
+    height = models.IntegerField(verbose_name="키", default=0)
+    weight = models.IntegerField(verbose_name="몸무게", default=0)
     target_blood_sugar = models.IntegerField(verbose_name="목표 혈당 수치", default=0)
