@@ -2,11 +2,12 @@ from django.db import models
 from accounts.models import User
 
 class Food(models.Model):
-    diet = models.ForeignKey(Diet, on_delete=models.CASCADE)
+    food_id = models.BigAutoField(primary_key=True)
+    diet = models.ForeignKey(Diet, on_delete=models.CASCADE, related_name=foods)
     food_name = models.CharField(max_length=100)
     food_type = models.CharField(max_length=100)
     food_calorie = models.IntegerField(blank=True, null=True)
-    food_date = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     recipe = models.TextField()
     grain = models.IntegerField(default=0)
     fish_meat_low_fat = models.IntegerField(default=0)
@@ -20,11 +21,12 @@ class Food(models.Model):
         return self.food_name
 
 class Diet(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    diet_id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name=diets)
     diet_set = models.ForeignKey(DietSet, on_delete=models.CASCADE)
     diet_name = models.CharField(max_length=100)
     diet_calorie = models.IntegerField(blank=True, null=True)
-    diet_date = models.DateField(auto_now_add=True, blank=True, null=True)
+    created_at = models.DateField(auto_now_add=True, blank=True, null=True)
     diet_img = models.ImageField(upload_to='diet_photos/', blank=True, null=True)
     meal_time = models.CharField(max_length=100, blank=True, null=True)
     meal_type = models.CharField(max_length=100, blank=True, null=True)
@@ -36,6 +38,7 @@ class Diet(models.Model):
         return self.diet_name
 
 class FoodExchangeListCalorie(models.Model):
+    food_exchange_list_calorie_id = models.BigAutoField(primary_key=True)
     energy_calorie = models.IntegerField(default=0)
     grain = models.IntegerField(default=0)
     fish_meat_low_fat = models.IntegerField(default=0)
@@ -49,6 +52,7 @@ class FoodExchangeListCalorie(models.Model):
         return self.energy_calorie
 
 class FoodExchangeListProduct(models.Model):
+    food_exchange_list_product_id = models.BigAutoField(primary_key=True)
     grain_product = models.CharField(max_length=100)
     fish_meat_low_fat_product = models.TextField()
     fish_meat_medium_fat_product = models.TextField()
@@ -58,4 +62,5 @@ class FoodExchangeListProduct(models.Model):
     vegetable_product = models.TextField()
 
 class DietSet(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    diet_set_id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name=dietsets)
