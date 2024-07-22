@@ -1,15 +1,15 @@
 from django.db import models
-from accounts.models import User
+from django.conf import settings
 
 
 class DietSet(models.Model):
     diet_set_id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='dietsets')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='dietsets')
 
 
 class Diet(models.Model):
     diet_id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='diets')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='diets')
     diet_set = models.ForeignKey(DietSet, on_delete=models.CASCADE, related_name='diets')
     diet_name = models.CharField(max_length=100, blank=True, null=True)
     diet_calorie = models.IntegerField(blank=True, null=True)
