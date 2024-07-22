@@ -2,6 +2,8 @@ from django.db import models
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
+from diets.models import FoodExchangeListCalorie
+
 class UserManager(BaseUserManager):
     def create_user(self, id, nickname, password, email, gender, **kwargs):
         user = self.model(
@@ -51,6 +53,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    food_exchange_list_calorie = models.ForeignKey(FoodExchangeListCalorie, related_name='user')
 
     objects = UserManager()
 
