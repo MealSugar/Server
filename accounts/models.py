@@ -5,25 +5,23 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from diets.models import FoodExchangeListCalorie
 
 class UserManager(BaseUserManager):
-    def create_user(self, id, nickname, password, email, gender, **kwargs):
+    def create_user(self, id, nickname, password, email, **kwargs):
         user = self.model(
             id=id,
             nickname = nickname,
             password = password,
-            email = email,
-            gender = gender,
+            email = email
         )
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, id=None, nickname=None, password=None, email=None, gender=None, **extra_fields):
+    def create_superuser(self, id=None, nickname=None, password=None, email=None, **extra_fields):
         superuser = self.create_user(
             id=id,
             nickname = nickname,
             password = password,
-            email = email,
-            gender = gender,
+            email = email
         )
         
         superuser.is_staff = True
@@ -38,7 +36,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     id = models.CharField(max_length=20, unique=True)
     nickname = models.CharField(max_length=20)
     email = models.EmailField(max_length=50)
-    gender = models.CharField(max_length=2)
+    gender = models.CharField(max_length=2, blank=True)
     age = models.IntegerField(default=0)
     height = models.IntegerField(default=0)
     weight = models.IntegerField(default=0)
@@ -52,13 +50,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     recommend_count = models.IntegerField(default=0)
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     food_exchange_list_calorie = models.ForeignKey(FoodExchangeListCalorie, on_delete=models.SET_NULL, related_name='user', null=True)
 
     objects = UserManager()
 
     USERNAME_FIELD = 'id'
-    REQUIRED_FIELDS = ['nickname', 'email', 'gender']
+    REQUIRED_FIELDS = ['nickname', 'email']
 
     def __str__(self):
         return self.nickname
