@@ -6,6 +6,6 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 app_name = 'accounts'
 
-urlpatterns = [
-    path(),
-]
+# urlpatterns = [
+#     path(),
+# ]
