@@ -53,7 +53,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    food_exchange_list_calorie = models.ForeignKey(FoodExchangeListCalorie, related_name='user')
+    food_exchange_list_calorie = models.ForeignKey(FoodExchangeListCalorie, on_delete=models.SET_NULL, related_name='user', null=True)
 
     objects = UserManager()
 
