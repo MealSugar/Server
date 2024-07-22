@@ -1,9 +1,9 @@
 from django.db import models
-from accounts.models import User
+from django.conf import settings
 
 class BloodSugarState(models.Model):
     blood_sugar_id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='BloodSugarStates')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='BloodSugarStates')
     morning_fasting_blood_sugar = models.IntegerField(verbose_name="아침 공복 혈당", null=True, blank=True)
     noon_fasting_blood_sugar = models.IntegerField(verbose_name="점심 공복 혈당", null=True, blank=True)
     evening_fasting_blood_sugar = models.IntegerField(verbose_name="저녁 공복 혈당", null=True, blank=True)
