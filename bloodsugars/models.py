@@ -17,4 +17,7 @@ class TargetBloodSugar(models.Model):
     target_blood_sugar_id = models.BigAutoField(primary_key=True)
     height = models.IntegerField(verbose_name="키", default=0)
     weight = models.IntegerField(verbose_name="몸무게", default=0)
+    max_age = models.IntegerField(default=0)
+    min_age = models.IntegerField(default=0)
+    gender = models.CharField(max_length=10, blank=True)
     target_blood_sugar = models.IntegerField(verbose_name="목표 혈당 수치", default=0)
