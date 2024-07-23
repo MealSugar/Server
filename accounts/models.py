@@ -34,7 +34,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     user_id = models.BigAutoField(primary_key=True)
     id = models.CharField(max_length=20, unique=True)
-    nickname = models.CharField(max_length=20)
+    nickname = models.CharField(max_length=20, unique=True)
     email = models.EmailField(max_length=50)
     gender = models.CharField(max_length=2, blank=True)
     age = models.IntegerField(default=0)
