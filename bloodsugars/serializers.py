@@ -14,7 +14,7 @@ class BloodSugarStateSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         date = validated_data['date']
         fasting_blood_sugar = validated_data['fasting_blood_sugar']
-        post_meal_blood_sugar = validated_data.pop['post_meal_blood_sugar']
+        post_meal_blood_sugar = validated_data['post_meal_blood_sugar']
 
         blood_sugar_state = BloodSugarState.objects.filter(user=user, created_at=date).first()
 

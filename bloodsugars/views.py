@@ -1,6 +1,5 @@
 from datetime import timedelta
 from django.utils import timezone
-from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -8,9 +7,10 @@ from .models import BloodSugarState
 from .serializers import *
 
 class StateAPIView(APIView):
-    def get(self, request):        
-        blood_sugar_state = get_object_or_404(BloodSugarState)
-        if blood_sugar_state.user == request.user:
+    def get(self, request):
+        today = timezone.now().date()
+        try:
+            blood_sugar_state = BloodSugarState.objects.get(user=request.user, created_at=today)
             today_data = {
                 "date": blood_sugar_state.created_at,
                 "fasting_blood_sugar": {
@@ -25,7 +25,6 @@ class StateAPIView(APIView):
                 }
             }
 
-            today = timezone.now().date()
             week = today - timedelta(days=6)
             weekly = BloodSugarState.objects.filter(user=request.user, created_at__gte=week, created_at__lte=today)
             weekly_data = []
@@ -85,7 +84,9 @@ class StateAPIView(APIView):
             }
 
             return Response(data, status=status.HTTP_200_OK)
-        
+        except BloodSugarState.DoesNotExist:
+            return Response({"message": "No blood sugar data for today."}, status=status.HTTP_404_NOT_FOUND)
+
 class BloodSugarAPIView(APIView):
     def post(self, request):
         serializer = BloodSugarStateSerializer(data=request.data, context={'request': request})
