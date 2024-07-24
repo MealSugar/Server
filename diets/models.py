@@ -20,9 +20,7 @@ class Diet(models.Model):
     is_my_recipe = models.BooleanField(default=False)
     is_like = models.BooleanField(default=False)
     heart_count = models.IntegerField(default=0)
-
-    def __str__(self):
-        return self.diet_name
+    
 
 class Food(models.Model):
     food_id = models.BigAutoField(primary_key=True)

@@ -4,7 +4,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import *
+from .serializers import *
 from django.shortcuts import get_object_or_404
+from datetime import timedelta
+from django.utils import timezone
 
 class DietDetailView(APIView):
     def get(self, request, pk):
@@ -44,3 +47,60 @@ class DietDetailView(APIView):
                 
             return Response(data, status=status.HTTP_200_OK)
         return Response({"message": "access denied."}, status=status.HTTP_403_FORBIDDEN)
+
+class DiethonView(APIView):
+    def get(self, request):
+        now = timezone.now()
+        start_of_week = now - timedelta(days=now.weekday())
+        end_of_week = start_of_week + timedelta(days=6)
+
+        weekly_diets = Diet.objects.filter(created_at__range=(start_of_week.date(), end_of_week.date()))
+        sorted_diets = weekly_diets.order_by('-heart_count', 'user__created_at', '-diet_id')
+
+        data = {
+            "first_nickname": sorted_diets[0].user.nickname if len(sorted_diets)>0 else "",
+            "second_nickname": sorted_diets[1].user.nickname if len(sorted_diets)>1 else "",
+            "third_nickname": sorted_diets[2].user.nickname if len(sorted_diets)>2 else "",
+            "diets": []
+        }
+
+        if len(sorted_diets)>0:
+            for diet in sorted_diets:
+                foods = Food.objects.filter(diet=diet)
+                main = None
+                sides = []
+
+                for food in foods:
+                    if food.food_type == 'main':
+                        main = food.food_name
+                    else:
+                        sides.append(food.food_name)
+
+                diet_data = {
+                    "diet_id": diet.diet_id,
+                    "nickname": diet.user.nickname,
+                    "main": main if main else "",
+                    "side1": sides[0] if len(sides)>0 else "",
+                    "side2": sides[1] if len(sides)>1 else "",
+                    "side3": sides[2] if len(sides)>2 else ""
+                }
+
+                serializer = DiethonSerializer(data=diet_data)
+                if serializer.is_valid():
+                    data["diets"].append(serializer.data)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response(data, status=status.HTTP_200_OK)
+
+
+class DietHeartView(APIView):
+    def patch(self, request, pk):
+        diet = get_object_or_404(Diet, pk=pk)
+        serializer = DietHeartSerializer(diet, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "heart changed successfully"}, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
