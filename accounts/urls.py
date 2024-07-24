@@ -10,4 +10,7 @@ urlpatterns = [
     path('id-check/', IdCheckAPIView.as_view()),
     path('nickname-check/', NicknameCheckAPIView.as_view()),
     path('refresh/', RefreshAPIView.as_view()),
+    path('diagnosis/', UserAPIView.as_view()),
+    path('mypage/myinfo/edit/', UserAPIView.as_view()),
+    path('food-exchange-list/', FoodExchangeAPIView.as_view()),
 ]

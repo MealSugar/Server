@@ -1,5 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 
+from diets.models import FoodExchangeListCalorie
+
 from rest_framework.views import APIView
 from .serializers import *
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
@@ -13,7 +15,6 @@ from rest_framework.decorators import permission_classes, api_view
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
 # from django.contrib.auth.models import AnonymousUser
-
 
 class RefreshAPIView(APIView):
     permission_classes = [AllowAny]
@@ -100,3 +101,45 @@ class LoginAPIView(APIView):
             return res
         else: # id나 비번 둘 중 하나가 틀렸을 때
             return Response({"message": "Login failed"}, status=status.HTTP_400_BAD_REQUEST)
+        
+class UserAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    # 내 정보 수정 및 진단테스트
+    def patch(self, request):
+        user = request.user
+        serializer = UserInfoSerializer(user, request.data, partial=True)
+        if serializer.is_valid():
+            user = serializer.save()
+            temp = (float(user.height) / 100) **2
+            if user.gender == '남성':
+                temp *= 22
+            else:
+                temp *= 21
+            daily_cal = ((int(temp) * 30)//100)*100
+            try:
+                food_exchange = FoodExchangeListCalorie.objects.get(energy_calorie=daily_cal)
+                user.food_exchange_list_calorie = food_exchange
+            except:
+                user.food_exchange_list_calorie = None
+            user.save()
+            return Response({"message": "data save success"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class FoodExchangeAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    # 식품교환표 전달
+    def get(self, request):
+        user = request.user
+        try:
+            food_exchange = user.food_exchange_list_calorie
+            if not food_exchange:
+                return Response({"message": "There is no match food_exchange"}, status=status.HTTP_400_BAD_REQUEST)
+            serializer = FoodExchangeSerializer(food_exchange)
+            res = {
+            "nickname": user.nickname,
+            "food_exchange": serializer.data
+            }
+            return Response(res, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "There is no match food_exchange"}, status=status.HTTP_400_BAD_REQUEST)
