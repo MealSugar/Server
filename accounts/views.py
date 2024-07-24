@@ -16,7 +16,6 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
 # from django.contrib.auth.models import AnonymousUser
 
-
 class RefreshAPIView(APIView):
     permission_classes = [AllowAny]
     # access token 재발급
