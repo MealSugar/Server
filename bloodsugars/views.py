@@ -63,11 +63,11 @@ class StateAPIView(APIView):
                 normal_upper_limit = 160
                 caution_lower_limit = 161
 
-            low_blood_sugar_count = sum(1 for data in weekly_data if data["fasting_blood_sugar"] is not None and data["fasting_blood_sugar"] <= 54)
-            caution_low_blood_sugar_count = sum(1 for data in weekly_data if data["fasting_blood_sugar"] is not None and 54 < data["fasting_blood_sugar"] < 70)
-            normal_count = sum(1 for data in weekly_data if data["fasting_blood_sugar"] is not None and 70 <= data["fasting_blood_sugar"] <= normal_upper_limit)
-            caution_high_blood_sugar_count = sum(1 for data in weekly_data if data["fasting_blood_sugar"] is not None and caution_lower_limit < data["fasting_blood_sugar"] <= 199)
-            high_blood_sugar_count = sum(1 for data in weekly_data if data["fasting_blood_sugar"] is not None and 200 <= data["fasting_blood_sugar"])
+            low_blood_sugar_count = sum(1 for data in weekly_data if data["post_meal_blood_sugar"] is not None and data["post_meal_blood_sugar"] <= 54)
+            caution_low_blood_sugar_count = sum(1 for data in weekly_data if data["post_meal_blood_sugar"] is not None and 54 < data["post_meal_blood_sugar"] < 70)
+            normal_count = sum(1 for data in weekly_data if data["post_meal_blood_sugar"] is not None and 70 <= data["post_meal_blood_sugar"] <= normal_upper_limit)
+            caution_high_blood_sugar_count = sum(1 for data in weekly_data if data["post_meal_blood_sugar"] is not None and caution_lower_limit < data["post_meal_blood_sugar"] <= 199)
+            high_blood_sugar_count = sum(1 for data in weekly_data if data["post_meal_blood_sugar"] is not None and 200 <= data["post_meal_blood_sugar"])
 
             normal_range_percentage = {
                 "low_blood_sugar": low_blood_sugar_count,
