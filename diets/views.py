@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import *
 from .serializers import *
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from datetime import timedelta
 from django.utils import timezone
 
@@ -104,3 +104,57 @@ class DietHeartView(APIView):
             return Response({"message": "heart changed successfully"}, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DietLikeView(APIView):
+    def patch(self, request, pk):
+        diet_set = get_object_or_404(DietSet, pk=pk)
+        diet = get_list_or_404(Diet, diet_set=diet_set)
+        serializer = DietLikeSerializer(diet, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            is_like = serializer.validated_data['is_like']
+            serializer.save()
+            if is_like:
+                return Response({"message": "like success"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "like cancel"}, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DietRegisterView(APIView):
+    def post(self, request):
+        main_data = request.data.get('main', {})
+        side1_data = request.data.get('side1', {})
+        side2_data = request.data.get('side2', {})
+        side3_data = request.data.get('side3', {})
+
+        main_data['food_type'] = 'main' if main_data else None
+        side1_data['food_type'] = 'side1' if side1_data else None
+        side2_data['food_type'] = 'side2' if side2_data else None
+        side3_data['food_type'] = 'side3' if side3_data else None
+
+        def pop_nutrients(data):
+            food_data = data.pop('nutrients', {})
+            combined_data = {**food_data, **data}
+            return combined_data
+
+        main_food_data = pop_nutrients(main_data)
+        side1_food_data = pop_nutrients(side1_data)
+        side2_food_data = pop_nutrients(side2_data)
+        side3_food_data = pop_nutrients(side3_data)
+
+        user = request.user
+        diet_set, created = DietSet.objects.get_or_create(user=user)
+        diet = Diet.objects.create(user=user, diet_set=diet_set, is_my_recipe=True)
+
+        for food_data in [main_food_data, side1_food_data, side2_food_data, side3_food_data]:
+            if food_data['food_type']:
+                serializer = MyFoodRegisterSerializer(data=food_data)
+                if serializer.is_valid():
+                    serializer.save(diet=diet)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"message": "register success."}, status=status.HTTP_201_CREATED)
