@@ -146,8 +146,7 @@ class DietRegisterView(APIView):
         side3_food_data = pop_nutrients(side3_data)
 
         user = request.user
-        diet_set, created = DietSet.objects.get_or_create(user=user)
-        diet = Diet.objects.create(user=user, diet_set=diet_set, is_my_recipe=True)
+        diet = Diet.objects.create(user=user, is_my_recipe=True)
 
         for food_data in [main_food_data, side1_food_data, side2_food_data, side3_food_data]:
             if food_data['food_type']:

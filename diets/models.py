@@ -11,7 +11,7 @@ class DietSet(models.Model):
 class Diet(models.Model):
     diet_id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='diets')
-    diet_set = models.ForeignKey(DietSet, on_delete=models.CASCADE, related_name='diets')
+    diet_set = models.ForeignKey(DietSet, on_delete=models.CASCADE, related_name='diets', blank=True, null=True)
     diet_name = models.CharField(max_length=100, blank=True, null=True)
     diet_calorie = models.IntegerField(blank=True, null=True)
     created_at = models.DateField(auto_now_add=True, blank=True, null=True)
