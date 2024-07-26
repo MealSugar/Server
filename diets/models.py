@@ -5,6 +5,7 @@ from django.conf import settings
 class DietSet(models.Model):
     diet_set_id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='dietsets')
+    created_at = models.DateField(auto_now_add=True)
 
 
 class Diet(models.Model):
