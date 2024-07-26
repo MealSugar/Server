@@ -104,6 +104,15 @@ class LoginAPIView(APIView):
         
 class UserAPIView(APIView):
     permission_classes = [IsAuthenticated]
+
+    # 내 정보 페이지
+    def get(self, request):
+        user = request.user
+        if user:
+            serializer = UserInfoSerializer(user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"message": "No User"}, status=status.HTTP_400_BAD_REQUEST)
+        
     # 내 정보 수정 및 진단테스트
     def patch(self, request):
         user = request.user
@@ -143,3 +152,4 @@ class FoodExchangeAPIView(APIView):
             return Response(res, status=status.HTTP_200_OK)
         except:
             return Response({"message": "There is no match food_exchange"}, status=status.HTTP_400_BAD_REQUEST)
+        
