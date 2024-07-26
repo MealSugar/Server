@@ -26,7 +26,7 @@ urlpatterns = [
     path('api/bloodsugars/', include('bloodsugars.urls')),
     path('api/diets/', include('diets.urls')),
     path('api/maps/', include('maps.urls')),
-    # path('api/podos/', include('podos.urls')),
+    path('api/podos/', include('podos.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # MEDIA_URL로 들어오는 요청에 대해 MEDIA_ROOT 경로를 탐색한다.
