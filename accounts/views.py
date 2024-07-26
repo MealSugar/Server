@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 
-from diets.models import FoodExchangeListCalorie
+from diets.models import FoodExchangeListCalorie, DietSet, Diet, Food
 
 from rest_framework.views import APIView
 from .serializers import *
@@ -90,6 +90,7 @@ class LoginAPIView(APIView):
             token = TokenObtainPairSerializer.get_token(user)
             refresh_token = str(token)
             access_token = str(token.access_token)
+            update_last_login(None, user)
             res = Response(
                 {
                     "message": "login success",
@@ -153,3 +154,53 @@ class FoodExchangeAPIView(APIView):
         except:
             return Response({"message": "There is no match food_exchange"}, status=status.HTTP_400_BAD_REQUEST)
         
+class MypageAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    # 마이페이지
+    def get(self, request):
+        user = request.user
+
+        res = {
+            "nickname": user.nickname,
+            "is_subscribe": user.is_subscribe,
+            "remained_podo": user.remained_podo
+        }
+        return Response(res, status=status.HTTP_200_OK)
+    
+class LikedDietAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    # 추천 식단 즐겨찾기
+    def get(self, request):
+        user = request.user
+        res = {
+            "liked_diets": []
+        }
+        diet_sets = DietSet.objects.filter(user=user)
+        if diet_sets:
+            for diet_set in diet_sets:
+                diet_set_data = {
+                    "date": diet_set.created_at,
+                    "diet_set_id": diet_set.diet_set_id,
+                    "diets": []
+                }
+                diets_is_liked = diet_set.diets.filter(is_like=True)
+                diets_ordered = diets_is_liked.order_by('-created_at')
+                for diet in diets_ordered:
+                    diet_data = {
+                        "diet_id": diet.diet_id,
+                        "meal_time": diet.meal_time,
+                        "meal_type": diet.meal_type,
+                        "carlorie": diet.diet_calorie,
+                    }
+                    foods = diet.foods.all()
+                    for index, food in enumerate(foods):
+                        if food.food_type == "main":
+                            diet_data["main"] = food.food_name
+                        else:
+                            diet_data[f"side{index}"] = food.food_name
+                    diet_set_data["diets"].append(diet_data)
+                res["liked_diets"].append(diet_set_data)
+            return Response(res, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "아직 즐겨찾기 한 식단이 없어요!"}, status=status.HTTP_200_OK)
+
