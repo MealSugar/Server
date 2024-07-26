@@ -18,4 +18,4 @@ class PodoHistory(models.Model):
     created_at = models.DateField(verbose_name="구매일", auto_now_add=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name= 'PodoHistories')
     remaining_points = models.IntegerField(verbose_name="당시 남은 포인트")
-    podo_store = models.ForeignKey(PodoPointList, on_delete=models.CASCADE, null=True, blank=True, related_name= 'PodoHistories')
+    podo_point_list = models.ForeignKey(PodoPointList, on_delete=models.CASCADE, null=True, blank=True, related_name= 'PodoHistories')
