@@ -14,6 +14,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import permission_classes, api_view
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
+
+from django.utils import timezone
 # from django.contrib.auth.models import AnonymousUser
 
 class RefreshAPIView(APIView):
@@ -203,4 +205,58 @@ class LikedDietAPIView(APIView):
             return Response(res, status=status.HTTP_200_OK)
         else:
             return Response({"message": "아직 즐겨찾기 한 식단이 없어요!"}, status=status.HTTP_200_OK)
+        
 
+class HomeAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    # 메인페이지 정보 제공
+    def get(self, request):
+        user = request.user
+        blood_sugar_state = user.BloodSugarStates.filter(created_at=timezone.now().date())
+        if blood_sugar_state:
+            post_blood_sugar_values = [
+                    blood_sugar_state[0].morning_post_meal_blood_sugar,
+                    blood_sugar_state[0].noon_post_meal_blood_sugar,
+                    blood_sugar_state[0].evening_post_meal_blood_sugar
+                ]
+            count_post_blood_sugar_values = [value for value in post_blood_sugar_values if value is not None]
+            k2 = len(count_post_blood_sugar_values)
+            daily_blood_sugar = sum(count_post_blood_sugar_values) / k2 if k2 > 0 else None
+        else:
+            daily_blood_sugar = None
+        res = {
+            "nickname": user.nickname,
+            "recommend_count": user.recommend_count,
+            "daily_calorie": user.food_exchange_list_calorie.energy_calorie,
+            "daily_blood_sugar": daily_blood_sugar,
+            "target_blood_sugar": 140 if user.age < 60 else 160,
+            "diet_sets": []
+        }
+        if user.recommend_count:
+            diet_sets = DietSet.objects.filter(user=user, created_at=timezone.now().date())
+            for diet_set in diet_sets:
+                diets = diet_set.diets.all()
+                is_liked = True if diets[0].is_like else False
+                diet_set_data = {
+                    "diet_set_id": diet_set.diet_set_id,
+                    "is_liked": is_liked,
+                    "diets": [],
+                }
+                for diet in diets:
+                    diet_data = {
+                        "diet_id": diet.diet_id,
+                        "meal_time": diet.meal_time,
+                        "meal_type": diet.meal_type,
+                        "carlorie": diet.diet_calorie,
+                    }
+                    foods = diet.foods.all()
+                    for index, food in enumerate(foods):
+                        if food.food_type == "main":
+                            diet_data["main"] = food.food_name
+                        else:
+                            diet_data[f"side{index}"] = food.food_name
+                    diet_set_data['diets'].append(diet_data)
+                res["diet_sets"].append(diet_set_data)
+            return Response(res, status=status.HTTP_200_OK)
+        else:
+            return Response(res, status=status.HTTP_200_OK)
