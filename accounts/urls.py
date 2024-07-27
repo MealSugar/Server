@@ -16,4 +16,5 @@ urlpatterns = [
     path('mypage/myinfo/', UserAPIView.as_view()),
     path('mypage/', MypageAPIView.as_view()),
     path('mypage/recommended-diet-list/', LikedDietAPIView.as_view()),
+    path('home/', HomeAPIView.as_view()),
 ]
