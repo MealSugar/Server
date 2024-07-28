@@ -18,6 +18,19 @@ from django.contrib.auth.models import update_last_login
 from django.utils import timezone
 # from django.contrib.auth.models import AnonymousUser
 
+def midnightReset():
+    now = timezone.now().date()
+    users = User.objects.all()
+    diets = Diet.objects.filter(is_my_recipe=False)
+    for user in users:
+        user.recommend_count = 0
+        user.save()
+    
+    for diet in diets:
+        if not diet.is_like:
+            diet.delete()
+    return
+
 class RefreshAPIView(APIView):
     permission_classes = [AllowAny]
     # access token 재발급
