@@ -7,4 +7,5 @@ urlpatterns = [
     path('heart/<int:pk>/', DietHeartView.as_view()), 
     path('like/<int:pk>/', DietLikeView.as_view()),
     path('mydiet/register/', DietRegisterView.as_view()),
+    path('recommend/', DietRecommendationView.as_view()),
 ]

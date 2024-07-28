@@ -51,3 +51,34 @@ class MyFoodRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Food
         fields = ['food_name', 'food_type', 'recipe', 'grain', 'fish_meat_low_fat', 'fish_meat_medium_fat', 'vegetable', 'fat', 'fruit']
+
+
+class DietRecommendationSerializer(serializers.Serializer):
+    diet_combination = serializers.CharField(max_length=15)
+    breakfast = serializers.CharField(max_length=15)
+    lunch = serializers.CharField(max_length=15)
+    dinner = serializers.CharField(max_length=15)
+    ingredient1 = serializers.CharField(max_length=100, allow_null=True, allow_blank=True)
+    ingredient2 = serializers.CharField(max_length=100, allow_null=True, allow_blank=True)
+    ingredient3 = serializers.CharField(max_length=100, allow_null=True, allow_blank=True)
+    
+
+class FoodRecommendCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Food
+        fields = ['food_name', 'food_type', 'food_calorie', 'recipe', 'grain', 'fish_meat_low_fat', 'fish_meat_medium_fat', 'fruit', 'fat', 'dairy', 'vegetable']
+
+
+class DietRecommendCreateSerializer(serializers.ModelSerializer):
+    foods = FoodRecommendCreateSerializer(many=True)
+
+    class Meta:
+        model = Diet
+        fields = ['user', 'diet_set', 'diet_calorie', 'meal_time', 'meal_type', 'is_my_recipe', 'is_like', 'heart_count', 'foods']
+
+    def create(self, validated_data):
+        foods_data = validated_data.pop('foods')
+        diet = Diet.objects.create(**validated_data)
+        for food_data in foods_data:
+            Food.objects.create(diet=diet, **food_data)
+        return diet
