@@ -65,9 +65,21 @@ class DiethonView(APIView):
         sorted_diets = weekly_diets.order_by('-heart_count', 'user__created_at', '-diet_id')
 
         data = {
-            "first_nickname": sorted_diets[0].user.nickname if len(sorted_diets)>0 else "",
-            "second_nickname": sorted_diets[1].user.nickname if len(sorted_diets)>1 else "",
-            "third_nickname": sorted_diets[2].user.nickname if len(sorted_diets)>2 else "",
+            "first": {
+                "first_nickname": sorted_diets[0].user.nickname if len(sorted_diets)>0 else "",
+                "diet_name": sorted_diets[0].diet_name if len(sorted_diets)>0 else "",
+                "heart": sorted_diets[0].heart_count if len(sorted_diets)>0 else ""
+            },
+            "second": {
+                "second_nickname": sorted_diets[1].user.nickname if len(sorted_diets)>1 else "",
+                "diet_name": sorted_diets[1].diet_name if len(sorted_diets)>1 else "",
+                "heart": sorted_diets[1].heart_count if len(sorted_diets)>1 else ""
+            },
+            "third": {
+                "third_nickname": sorted_diets[2].user.nickname if len(sorted_diets)>2 else "",
+                "diet_name": sorted_diets[2].diet_name if len(sorted_diets)>2 else "",
+                "heart": sorted_diets[2].heart_count if len(sorted_diets)>2 else ""
+            },
             "diets": []
         }
 
@@ -85,6 +97,7 @@ class DiethonView(APIView):
 
                 diet_data = {
                     "diet_id": diet.diet_id,
+                    "diet_name": diet.diet_name,
                     "nickname": diet.user.nickname,
                     "main": main if main else "",
                     "side1": sides[0] if len(sides)>0 else "",

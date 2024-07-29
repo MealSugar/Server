@@ -3,6 +3,7 @@ from .models import *
 
 class DiethonSerializer(serializers.Serializer):
     diet_id = serializers.IntegerField()
+    diet_name = serializers.CharField(max_length=100, allow_null=True, allow_blank=True)
     nickname = serializers.CharField(max_length=20)
     main = serializers.CharField(max_length=100, allow_null=True, allow_blank=True)
     side1 = serializers.CharField(max_length=100, allow_null=True, allow_blank=True)
