@@ -1,0 +1,8 @@
+.git
+.gitignore
+.dockerignore
+Dockerfile
+venv/
+local_settings.py
+__pycache__/
+media
