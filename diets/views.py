@@ -89,7 +89,8 @@ class DiethonView(APIView):
                     "main": main if main else "",
                     "side1": sides[0] if len(sides)>0 else "",
                     "side2": sides[1] if len(sides)>1 else "",
-                    "side3": sides[2] if len(sides)>2 else ""
+                    "side3": sides[2] if len(sides)>2 else "",
+                    "heart": diet.heart_count
                 }
 
                 serializer = DiethonSerializer(data=diet_data)
@@ -98,7 +99,7 @@ class DiethonView(APIView):
                 else:
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            return Response(data, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class DietHeartView(APIView):

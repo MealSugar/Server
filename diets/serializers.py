@@ -8,6 +8,7 @@ class DiethonSerializer(serializers.Serializer):
     side1 = serializers.CharField(max_length=100, allow_null=True, allow_blank=True)
     side2 = serializers.CharField(max_length=100, allow_null=True, allow_blank=True)
     side3 = serializers.CharField(max_length=100, allow_null=True, allow_blank=True)
+    heart = serializers.IntegerField()
 
 
 class DietHeartSerializer(serializers.ModelSerializer):
