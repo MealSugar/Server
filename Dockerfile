@@ -10,6 +10,14 @@ WORKDIR /app
 
 # Install Python dependencies
 COPY requirements.txt /app/
+
+# 시스템 패키지 설치
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    default-libmysqlclient-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+    
 # 첫 번째 시도
 RUN pip install --upgrade pip || \
     # 실패할 경우, python.exe -m pip로 재시도
@@ -19,8 +27,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the Django project
 COPY . /app/
 
-# Expose port 8000 to allow communication to/from uwsgi
-EXPOSE 8000
+# Collect static files
+RUN python manage.py collectstatic --noinput
 
-# Run uWSGI
-CMD ["uwsgi", "--ini", "/app/uwsgi.ini"]
+# Apply database migrations
+RUN python manage.py migrate --noinput
