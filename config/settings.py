@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = local_settings.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -139,11 +139,12 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 if DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    DEBUG = False
+else:
     STATICFILES_DIRS = [
         BASE_DIR / 'static',
     ]
-else:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 MEDIA_URL = '/media/'
