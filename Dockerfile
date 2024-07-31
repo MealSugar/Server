@@ -26,9 +26,3 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the Django project
 COPY . /app/
-
-# Collect static files
-RUN python manage.py collectstatic --noinput
-
-# Apply database migrations
-RUN python manage.py migrate --noinput
