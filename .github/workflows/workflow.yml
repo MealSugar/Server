@@ -31,7 +31,7 @@ jobs:
                   context: .
                   file: Dockerfile
                   push: true
-                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/mealdang_api:latest
+                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}:latest
 
     deploy:
         runs-on: ubuntu-latest
@@ -50,4 +50,5 @@ jobs:
                       sudo docker compose stop
                       sudo docker compose rm -f
                       sudo docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}:latest
+                      sudo docker compose pull
                       sudo docker compose up -d
