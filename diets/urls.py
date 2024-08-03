@@ -8,4 +8,5 @@ urlpatterns = [
     path('like/<int:pk>/', DietLikeView.as_view()),
     path('mydiet/register/', DietRegisterView.as_view()),
     path('recommend/', DietRecommendationView.as_view()),
+    path('detail/photo/<int:pk>/', DietPhoto.as_view()),
 ]

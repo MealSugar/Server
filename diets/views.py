@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import *
+from podos.models import *
 from .serializers import *
 from django.shortcuts import get_object_or_404, get_list_or_404
 from datetime import timedelta
@@ -15,6 +16,34 @@ import ast
 client = OpenAI(
     api_key=local_settings.API_KEY,
 )
+
+def DiethonReward():
+    now = timezone.now()
+    start_of_week = now - timedelta(days=now.weekday())
+    end_of_week = start_of_week + timedelta(days=6)
+
+    weekly_diets = Diet.objects.filter(created_at__range=(start_of_week.date(), end_of_week.date()))
+    sorted_diets = weekly_diets.order_by('-heart_count', 'user__created_at', '-diet_id')
+    for i in range(3):
+        user = sorted_diets[i].user
+        podo_point = PodoPointList.objects.get(item_name = f'식단톤 우승 {i+1}등')
+        podohistory = PodoHistory.objects.create(
+            user = user,
+            remaining_podo = user.remained_podo + podo_point.points,
+            podo_point_list = podo_point
+        )
+        user.cumulative_podo = user.cumulative_podo + podo_point.points
+        user.remained_podo = podohistory.remaining_podo
+        user.save()
+
+class DietPhoto(APIView):
+    def patch(self, request, pk):
+        diet = get_object_or_404(Diet, diet_id=pk)
+        serializer = DietPhotoSerializer(diet, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "certificate successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
 
 class DietDetailView(APIView):
     def get(self, request, pk):
