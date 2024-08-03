@@ -185,7 +185,7 @@ class DietRecommendationView(APIView):
         serializer = DietRecommendationSerializer(data=request.data)
         user = request.user
         if serializer.is_valid():
-            ingredient_list, combination_list = [], ['아침','점심', '저녁']
+            ingredient_list, food_exchange_product_list, combination_list = [], [], ['아침','점심', '저녁']
             output_example = {"breakfast":{"meal_type":"korean","main":{"food_name":"현미밥","grain":2,"fish_meat_low_fat":0,"fish_meat_medium_fat":0,"vegetable":0,"fat":0,"dairy":0,"fruit":0,"food_calorie":200},"side1":{"food_name":"부추겉절이","grain":1,"fish_meat_low_fat":0,"fish_meat_medium_fat":0,"vegetable":1,"fat":0,"dairy":0,"fruit":0,"food_calorie":30},"side2":{"food_name":"계란찜","grain":0,"fish_meat_low_fat":1,"fish_meat_medium_fat":0,"vegetable":0,"fat":1,"dairy":1,"fruit":0,"food_calorie":100},"side3":{"food_name":"미역국","grain":1,"fish_meat_low_fat":0,"fish_meat_medium_fat":0,"vegetable":0,"fat":0,"dairy":0,"fruit":0,"food_calorie":40},"diet_calorie":370},"lunch":{"meal_type":"japanese","main":{"food_name":"두부스테이크","grain":0,"fish_meat_low_fat":0,"fish_meat_medium_fat":0,"vegetable":1,"fat":0,"dairy":0,"fruit":0,"food_calorie":180},"side1":{"food_name":"미소국","grain":1,"fish_meat_low_fat":0,"fish_meat_medium_fat":0,"vegetable":0,"fat":0,"dairy":1,"fruit":0,"food_calorie":70},"side2":{"food_name":"무생채","grain":0,"fish_meat_low_fat":0,"fish_meat_medium_fat":0,"vegetable":1,"fat":0,"dairy":0,"fruit":0,"food_calorie":25},"side3":{"food_name":"브로콜리","grain":0,"fish_meat_low_fat":0,"fish_meat_medium_fat":0,"vegetable":1,"fat":0,"dairy":0,"fruit":0,"food_calorie":20},"diet_calorie":295},"dinner":{"meal_type":"chinese","main":{"food_name":"돼지고기 마늘 볶음","grain":1,"fish_meat_low_fat":0,"fish_meat_medium_fat":2,"vegetable":1,"fat":2,"dairy":0,"fruit":0,"food_calorie":350},"side1":{"food_name":"잡채","grain":1,"fish_meat_low_fat":1,"fish_meat_medium_fat":0,"vegetable":1,"fat":0,"dairy":0,"fruit":0,"food_calorie":200},"side2":{"food_name":"양배추 샐러드","grain":0,"fish_meat_low_fat":0,"fish_meat_medium_fat":0,"vegetable":1,"fat":0,"dairy":0,"fruit":0,"food_calorie":40},"side3":{"food_name":"튀김","grain":1,"fish_meat_low_fat":0,"fish_meat_medium_fat":1,"vegetable":0,"fat":1,"dairy":0,"fruit":0,"food_calorie":200},"diet_calorie":790},"snack1":{"meal_type":"fruit","main":{"food_name":"배(2개)","grain":0,"fish_meat_low_fat":0,"fish_meat_medium_fat":0,"vegetable":0,"fat":0,"dairy":0,"fruit":2,"food_calorie":90},"diet_calorie":90}}
             recipe_example = "닭다리살 또는 닭가슴살: 500g, 밀가루: 1컵, 전분: 1/2컵 (또는 감자전분), 계란: 1개, 식용유: 적당량 (튀김용)"
             
@@ -211,6 +211,11 @@ class DietRecommendationView(APIView):
 
             combination_result = ', '.join(combination_list)
 
+            food_exchange_products = FoodExchangeListProduct.objects.all()
+            for product in food_exchange_products:
+                food_exchange_product_list.append(f"{product.food_exchange_name}: {product.product}")
+            food_exchange_product_example = ', '.join(food_exchange_product_list)
+
             diet_prompt = f"""
                 식단 추천하는데에 가장 중요한 점은 각각의 음식들의 칼로리의 합이 내 하루 권장 칼로리와 정확히 일치해야 하고, 각각의 음식들의 식품군들의 합이 내 하루 식품교환표의 식품군들과 정확히 일치해야 한다는 것이야. 아래 예시처럼 식사들의 식품군 총합이 일치하도록 식단을 추천해줘. 각각의 음식의 식품군들의 합이 내 식품교환표의 식품군과 맞지 않으면 다른 음식을 추천해줘.
 
@@ -234,9 +239,9 @@ class DietRecommendationView(APIView):
 
                 {combination_result}으로 식단을 잘 분배해줘. 각각의 식사의 식품군들의 총합과 칼로리 총합이 내 식품교환표의 식품군과 내 하루 권장 칼로리에 정확히 맞아야 해.
 
-                내가 원하는 출력의 예시: {output_example}
+                내가 원하는 출력의 예시: {output_example}, 참고 음식(각각의 음식들은 각 식품군의 1교환단위 기준 예시야): {food_exchange_product_example}.
 
-                해당 예시의 형식에 맞춰서 출력해줘 (예시의 출력 외에 다른 말은 출력하지 말고, '''json도 출력하지 말아줘). 내 식사의 조건 - 아침 종류: {breakfast}/ 점심 종류: {lunch}/ 저녁 종류: {dinner}, 들어갔으면 하는 재료: {ingredient_list}이야. main은 무조건 포함시키고 side1, side2, side3는 필수적인 것은 아니야 (diet_calorie, meal_type, food_name, food_calorie, 각종 식품군들은 필수로 출력해줘). 예시와는 다른 {combination_result} 식단을 추천해줘."""
+                해당 예시의 형식에 맞춰서 출력해줘 (예시의 출력 외에 다른 말은 출력하지 말고, '''json도 출력하지 말아줘). 참고 음식들을 참고하여 교환단위에 맞는 적절한 양과 음식을 추천해줘. 내 식사의 조건 - 아침 종류: {breakfast}/ 점심 종류: {lunch}/ 저녁 종류: {dinner}, 들어갔으면 하는 재료: {ingredient_list}이야. main은 무조건 포함시키고 side1, side2, side3는 필수적인 것은 아니야 (diet_calorie, meal_type, food_name, food_calorie, 각종 식품군들은 필수로 출력해줘). 예시와는 다른 {combination_result} 식단을 추천해줘."""
 
 
             def chat_gpt(prompt):
