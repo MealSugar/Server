@@ -59,10 +59,5 @@ class FoodExchangeListCalorie(models.Model):
 
 class FoodExchangeListProduct(models.Model):
     food_exchange_list_product_id = models.BigAutoField(primary_key=True)
-    grain_product = models.CharField(max_length=100)
-    fish_meat_low_fat_product = models.TextField()
-    fish_meat_medium_fat_product = models.TextField()
-    fruit_product = models.TextField()
-    fat_product = models.TextField()
-    dairy_product = models.TextField()
-    vegetable_product = models.TextField()
+    food_exchange_name = models.CharField(max_length=100)
+    product = models.TextField()
