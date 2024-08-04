@@ -1,6 +1,11 @@
 from rest_framework import serializers
 from .models import *
 
+class DietPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Diet
+        fields = ['diet_img']
+
 class DiethonSerializer(serializers.Serializer):
     diet_id = serializers.IntegerField()
     diet_name = serializers.CharField(max_length=100, allow_null=True, allow_blank=True)
