@@ -11,7 +11,7 @@ from datetime import timedelta
 from django.utils import timezone
 import local_settings
 from openai import OpenAI
-import ast
+import ast, json
 
 client = OpenAI(
     api_key=local_settings.API_KEY,
@@ -193,15 +193,18 @@ class DietLikeView(APIView):
 
 class DietRegisterView(APIView):
     def post(self, request):
-        main_data = request.data.get('main', {})
-        side1_data = request.data.get('side1', {})
-        side2_data = request.data.get('side2', {})
-        side3_data = request.data.get('side3', {})
+        diet_name = request.data.get('diet_name', None)
+        main_data = json.loads(request.POST.get('main', {}))
+        side1_data = json.loads(request.POST.get('side1', {}))
+        side2_data = json.loads(request.POST.get('side2', {}))
+        side3_data = json.loads(request.POST.get('side3', {}))
+        side4_data = json.loads(request.POST.get('side4', {}))
 
         main_data['food_type'] = 'main' if main_data else None
         side1_data['food_type'] = 'side1' if side1_data else None
         side2_data['food_type'] = 'side2' if side2_data else None
         side3_data['food_type'] = 'side3' if side3_data else None
+        side4_data['food_type'] = 'side4' if side4_data else None
 
         def pop_nutrients(data):
             food_data = data.pop('nutrients', {})
@@ -212,11 +215,13 @@ class DietRegisterView(APIView):
         side1_food_data = pop_nutrients(side1_data)
         side2_food_data = pop_nutrients(side2_data)
         side3_food_data = pop_nutrients(side3_data)
+        side4_food_data = pop_nutrients(side4_data)
 
         user = request.user
-        diet = Diet.objects.create(user=user, is_my_recipe=True)
+        diet_img = request.FILES['image'] if 'image' in request.FILES else None
+        diet = Diet.objects.create(diet_name=diet_name, user=user, is_my_recipe=True, diet_img=diet_img)
 
-        for food_data in [main_food_data, side1_food_data, side2_food_data, side3_food_data]:
+        for food_data in [main_food_data, side1_food_data, side2_food_data, side3_food_data, side4_food_data]:
             if food_data['food_type']:
                 serializer = MyFoodRegisterSerializer(data=food_data)
                 if serializer.is_valid():
