@@ -37,6 +37,7 @@ class ExchangeAPIView(APIView):
             serializer.save()
 
             user.remained_podo = remaining_podo
+            user.used_podo += podo_store.price
             user.save()
             return Response({
                 "message": "Podo history data saved successfully.",
