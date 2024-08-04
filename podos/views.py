@@ -13,6 +13,7 @@ class StoreAPIView(APIView):
         podo = PodoStore.objects.all()
 
         data = {
+            "nickname": user.nickname,
             "remained_podo": user.remained_podo,
             "items" : StoreSerializer(podo, many=True).data
         }
