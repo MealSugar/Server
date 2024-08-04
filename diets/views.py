@@ -317,6 +317,9 @@ class DietRecommendationView(APIView):
 
             diet_set = DietSet.objects.create(user=user)
 
+            user.recommend_count += 1
+            user.save()
+
             for meal_time in ['breakfast', 'lunch', 'dinner', 'snack1', 'snack2']:
                 meal_data = dictionary_data.get(meal_time)
                 if meal_data:
