@@ -194,11 +194,11 @@ class DietLikeView(APIView):
 class DietRegisterView(APIView):
     def post(self, request):
         diet_name = request.data.get('diet_name', None)
-        main_data = json.loads(request.POST.get('main', {}))
-        side1_data = json.loads(request.POST.get('side1', {}))
-        side2_data = json.loads(request.POST.get('side2', {}))
-        side3_data = json.loads(request.POST.get('side3', {}))
-        side4_data = json.loads(request.POST.get('side4', {}))
+        main_data = json.loads(request.POST.get('main', ''))
+        side1_data = json.loads(request.POST.get('side1', ''))
+        side2_data = json.loads(request.POST.get('side2', ''))
+        side3_data = json.loads(request.POST.get('side3', '')) if request.POST.get('side3', '') else {}
+        side4_data = json.loads(request.POST.get('side4', '')) if request.POST.get('side4', '') else {}
 
         main_data['food_type'] = 'main' if main_data else None
         side1_data['food_type'] = 'side1' if side1_data else None
