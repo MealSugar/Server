@@ -108,7 +108,7 @@ class DiethonView(APIView):
         start_of_week = now - timedelta(days=now.weekday())
         end_of_week = start_of_week + timedelta(days=6)
 
-        weekly_diets = Diet.objects.filter(created_at__range=(start_of_week.date(), end_of_week.date()))
+        weekly_diets = Diet.objects.filter(is_my_recipe=True, created_at__range=(start_of_week.date(), end_of_week.date()))
         sorted_diets = weekly_diets.order_by('-heart_count', 'user__created_at', '-diet_id')
 
         data = {
