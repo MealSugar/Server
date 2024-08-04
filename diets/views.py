@@ -54,16 +54,30 @@ class DietDetailView(APIView):
                 "date": diet.created_at,
                 "meal_time": diet.meal_time,
                 "meal_type": diet.meal_type,
+                "diet_name": diet.diet_name,
                 "is_my_recipe": diet.is_my_recipe,
-                "calorie": diet.diet_calorie,
                 "heart": diet.heart_count,
             }
+
+            total_food_exchange_list = [0]*7
+            total_calorie = 0
 
             foods = Food.objects.filter(diet=diet)
             
             for food in foods:
+                total_food_exchange_list[0] += food.grain
+                total_food_exchange_list[1] += food.fish_meat_low_fat
+                total_food_exchange_list[2] += food.fish_meat_medium_fat
+                total_food_exchange_list[3] += food.vegetable
+                total_food_exchange_list[4] += food.fat
+                total_food_exchange_list[5] += food.dairy
+                total_food_exchange_list[6] += food.fruit
+
+                total_calorie += food.food_calorie
+
                 food_data = {
                     "food_name": food.food_name,
+                    "food_calorie": food.food_calorie,
                     "nutrients": {
                         "grain": food.grain,
                         "fish_meat_low_fat": food.fish_meat_low_fat,
@@ -77,6 +91,10 @@ class DietDetailView(APIView):
                 }
 
                 data[food.food_type] = food_data
+
+            data['total_calorie'] = total_calorie
+            data['total_grain'], data['total_fish_meat_low_fat'], data['total_fish_meat_medium_fat'], data['total_vegetable'], data['total_fat'], data['total_dairy'], data['total_fruit'] = total_food_exchange_list[0], total_food_exchange_list[1], total_food_exchange_list[2], total_food_exchange_list[3], total_food_exchange_list[4], total_food_exchange_list[5], total_food_exchange_list[6]
+
 
             if diet.diet_img:
                 data["image"] = diet.diet_img
