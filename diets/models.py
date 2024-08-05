@@ -21,6 +21,7 @@ class Diet(models.Model):
     is_my_recipe = models.BooleanField(default=False)
     is_like = models.BooleanField(default=False)
     heart_count = models.IntegerField(default=0)
+    is_certificated = models.BooleanField(default=False)
     
 
 class Food(models.Model):
