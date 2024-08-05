@@ -199,10 +199,13 @@ class LikedDietAPIView(APIView):
                     "diets": []
                 }
                 diets_is_liked = diet_set.diets.filter(is_like=True)
+                if not diets_is_liked:
+                    continue
                 diets_ordered = diets_is_liked.order_by('-created_at')
                 for diet in diets_ordered:
                     diet_data = {
                         "diet_id": diet.diet_id,
+                        "is_certificated": diet.is_certificated,
                         "meal_time": diet.meal_time,
                         "meal_type": diet.meal_type,
                         "carlorie": diet.diet_calorie,
@@ -214,10 +217,7 @@ class LikedDietAPIView(APIView):
                         else:
                             diet_data[f"side{index}"] = food.food_name
                     diet_set_data["diets"].append(diet_data)
-                if diet_set_data["diets"]:
-                    continue
-                else:
-                    res["liked_diets"].append(diet_set_data)
+                res["liked_diets"].append(diet_set_data)
             return Response(res, status=status.HTTP_200_OK)
         else:
             return Response({"message": "아직 즐겨찾기 한 식단이 없어요!"}, status=status.HTTP_200_OK)
@@ -261,6 +261,7 @@ class HomeAPIView(APIView):
                 for diet in diets:
                     diet_data = {
                         "diet_id": diet.diet_id,
+                        "is_certificated": diet.is_certificated,
                         "meal_time": diet.meal_time,
                         "meal_type": diet.meal_type,
                         "carlorie": diet.diet_calorie,
