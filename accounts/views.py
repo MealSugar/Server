@@ -214,7 +214,10 @@ class LikedDietAPIView(APIView):
                         else:
                             diet_data[f"side{index}"] = food.food_name
                     diet_set_data["diets"].append(diet_data)
-                res["liked_diets"].append(diet_set_data)
+                if diet_set_data["diets"]:
+                    continue
+                else:
+                    res["liked_diets"].append(diet_set_data)
             return Response(res, status=status.HTTP_200_OK)
         else:
             return Response({"message": "아직 즐겨찾기 한 식단이 없어요!"}, status=status.HTTP_200_OK)
