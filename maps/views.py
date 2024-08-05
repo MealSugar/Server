@@ -12,7 +12,7 @@ class MapAPIView(APIView):
         restaurant = Map.objects.filter(place_type='restaurant')
 
         data = {
-            "cafe": MapSerializer(cafe, many =True),
-            "restaurant": MapSerializer(restaurant, many =True)
+            "cafe": MapSerializer(cafe, many =True).data,
+            "restaurant": MapSerializer(restaurant, many =True).data
         }
         return Response(data, status=status.HTTP_200_OK)
