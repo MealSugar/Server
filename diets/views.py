@@ -73,7 +73,8 @@ class DietDetailView(APIView):
                 total_food_exchange_list[5] += food.dairy
                 total_food_exchange_list[6] += food.fruit
 
-                total_calorie += food.food_calorie
+                if food.food_calorie:
+                    total_calorie += food.food_calorie
 
                 food_data = {
                     "food_name": food.food_name,
