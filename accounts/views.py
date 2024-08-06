@@ -250,8 +250,11 @@ class HomeAPIView(APIView):
         }
         if user.recommend_count:
             diet_sets = DietSet.objects.filter(user=user, created_at=timezone.now().date())
+            print(diet_sets)
             for diet_set in diet_sets:
                 diets = diet_set.diets.all()
+                if not diets:
+                    continue
                 is_liked = True if diets[0].is_like else False
                 diet_set_data = {
                     "diet_set_id": diet_set.diet_set_id,
