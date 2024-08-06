@@ -99,7 +99,7 @@ class DietDetailView(APIView):
 
 
             if diet.diet_img:
-                data["image"] = diet.diet_img
+                data["image"] = f"media/{diet.diet_img}"
                 
             return Response(data, status=status.HTTP_200_OK)
         return Response({"message": "access denied."}, status=status.HTTP_403_FORBIDDEN)
